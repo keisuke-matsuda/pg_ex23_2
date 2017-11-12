@@ -21,7 +21,7 @@ public class InvoiceWriter {
 		writer.write("1 " + invoice.getOwnerTelNumber() + "\n");
 		writer.write("5 " + invoice.getBasicCharge() + "\n");
 		writer.write("7 " + invoice.getCallCharge() + "\n");
-		writer.write("9 ======================================\n");
+		writer.write("9 ====================\n");
 	}
 
 	public void close() throws IOException {
