@@ -38,7 +38,6 @@ public class Main {
 				invoice.setOwnerTelNumber(record.getOwnerTelNumber());
 				basicCharge = INITIAL_BASIC_CHARGE;
 				unitPrice = INITIAL_CALL_UNIT_PRICE;
-				// callCharge = 0;
 				break;
 			case RC_SERVICE_INFO:
 				service(service, record);
@@ -48,16 +47,15 @@ public class Main {
 				call(invoice, service, record);
 				unitPrice = service.calcUnitPrice(record, unitPrice);
 				callCharge += (unitPrice * record.getCallMinutes());
-				System.out.println(callCharge);
 				invoice.addCallCharge(callCharge);
 				callCharge = 0;
+				unitPrice = INITIAL_CALL_UNIT_PRICE;
 				break;
 			case RC_SEPARATOR:
 				separate(invoice, service, writer);
 				basicCharge = service.calcBasicCharge(basicCharge);
 				invoice.setBasicCharge(basicCharge);
 				writer.write(invoice);
-				// callCharge = 0;
 				invoice.clear();
 				service.clear();
 				break;

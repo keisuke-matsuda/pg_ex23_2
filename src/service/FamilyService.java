@@ -7,7 +7,6 @@ public class FamilyService implements Service {
 	private static final int TEL_NUMBER = 2;
 	private static final String SERVICE_CODE = "C1";
 	private static final int BASIC_CHARGE = 100;
-//	private static final double DISCOUNT_RATIO = 0.5;
 	private boolean joined = false;
 	private String[] telNumbers = new String[TEL_NUMBER];
 	private int telNumberCount = 0;
@@ -45,7 +44,6 @@ public class FamilyService implements Service {
 
 	public int calcUnitPrice(Record record, int unitPrice) {
 		if (this.isFamilyTelNumber(record.getCallNumber())) {
-//			return (int) (unitPrice * DISCOUNT_RATIO);
 			return unitPrice/2;
 		}else{
 		return unitPrice;
