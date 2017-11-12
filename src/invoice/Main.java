@@ -1,11 +1,11 @@
 package invoice;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import service.Record;
 import service.Service;
+import service.ServiceCollection;
 
 public class Main {
 
@@ -16,41 +16,50 @@ public class Main {
 	private static final char RC_CALL_LOG = '5';
 	private static final char RC_SEPARATOR = '9';
 
+	static String invoicefile = "file/invoice.dat";
+	static String recordfile = "file/record.log";
+
 	public static void main(String[] args) throws IOException {
-		int basicCharge = 500;
-		int unitPrice = INITIAL_CALL_UNIT_PRICE;
+		int basicCharge = 0;
+		int unitPrice = 0;
 		int callCharge = 0;
 		String invoicefile = "file/invoice.dat";
 
+		Service service = new ServiceCollection();
 		RecordReader reader = new RecordReader();
-		BufferedWriter writer = new BufferedWriter(new FileWriter(invoicefile));
+		InvoiceWriter writer = new InvoiceWriter(new FileWriter(invoicefile));
+		Invoice invoice = new Invoice();
 
 		for (Record record = reader.read(); record != null; record = reader.read()) {
 			char recordCode = record.getRecordCode();
-			String ownerTelNumber = null;
+
 			switch (recordCode) {
-			case '1':
-				ownerTelNumber = record.getOwnerTelNumber();
+			case RC_OWNER_INFO:
+				invoice.setOwnerTelNumber(record.getOwnerTelNumber());
+				basicCharge = INITIAL_BASIC_CHARGE;
+				unitPrice = INITIAL_CALL_UNIT_PRICE;
+				// callCharge = 0;
 				break;
-			case '2':
-				String serviceCode = record.getServiceCode();
-				if(serviceCode.equals("E1")){
-					break;
-				}
-				String serviceOption = record.getServiceOption();
+			case RC_SERVICE_INFO:
+				service(service, record);
+				service.checkService(record);
 				break;
-			case '5':
-				int callTime = record.getCallMinutes();
-				int callStartHour = record.getStartHour();
-				break;
-			case '9':
-				writer.write("1 " + ownerTelNumber + "\n");
-				writer.write("5 " + basicCharge + "\n");
-				writer.write("7 " + callCharge + "\n");
-				writer.write("9 ======================================\n");
+			case RC_CALL_LOG:
+				call(invoice, service, record);
+				unitPrice = service.calcUnitPrice(record, unitPrice);
+				callCharge += (unitPrice * record.getCallMinutes());
+				System.out.println(callCharge);
+				invoice.addCallCharge(callCharge);
 				callCharge = 0;
-				basicCharge = 0;
-				serviceCode = null;
+				break;
+			case RC_SEPARATOR:
+				separate(invoice, service, writer);
+				basicCharge = service.calcBasicCharge(basicCharge);
+				invoice.setBasicCharge(basicCharge);
+				writer.write(invoice);
+				// callCharge = 0;
+				invoice.clear();
+				service.clear();
 				break;
 			}
 

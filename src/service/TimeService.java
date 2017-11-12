@@ -19,14 +19,14 @@ abstract class TimeService implements Service {
 	public abstract boolean isServiceTime(int hour);
 
 	public void checkService(Record record) {
-
+		if(record.getServiceCode() == "E1"){
+			joined = true;
+		}
 	}
 
 	public abstract String getServiceCode();
 
-	public int calcUnitPrice(Record record, int unitPrice) {
-		return 0;
-	}
+	public abstract int calcUnitPrice(Record record, int unitPrice); 
 
 	public abstract int getDiscount();
 
