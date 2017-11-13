@@ -9,6 +9,7 @@ public class DayServiceTest {
 	@Test
 	public void testIsServiceTime() {
 		DayService testds1 = new DayService();
+		testds1.joined();
 		assertTrue(testds1.isServiceTime(15));
 		assertFalse(testds1.isServiceTime(18));
 	}
